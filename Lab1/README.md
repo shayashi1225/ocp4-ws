@@ -175,11 +175,14 @@ OpenShiftでは，いくつかの方法でアプリケーションをクラス�
     ![](images/create_project_result.png)
 
 ## カタログでソースを指定してビルド&デプロイ
-1. Catalog > Developer Catalog > Python を選択します
+1. Developerコンソールへ切り替えます。
+    ![](images/switch_dev_console.png)
 
-   (見当たらない場合は左の検索boxから検索してください)
+1. [From Catalog] を選択後、[Python]を選択します。
+
 
     ![](images/developer_catalog.png)
+    ![](images/developer_catalog_py.png)
 
     >Tips:
     >
@@ -197,34 +200,46 @@ OpenShiftでは，いくつかの方法でアプリケーションをクラス�
 
 1. **Create Application** を選択して，任意の**アプリケーション名** と **Gitリポジトリ** を指定します
 
-    - Name:`任意の名前(例: mypyapp)`
-    - Git Repoaitory: `https://github.com/sclorg/django-ex.git` 
-      - ("Try Sample↑" をクリックするとURLがセットされます)
-
     ![](images/developer_catalog_choose_python_1.png)
 
 
+    - Git Repoaitory: `https://github.com/sclorg/django-ex.git` 
+      - ("Try Sample↑" をクリックするとURLがセットされます)
+    - Application Name: `任意の名前(例: mypyapp-app)`
+    - Name: `任意の名前(例: mypyapp)`
+    - Resources: `Deployment Config`
+    - Advanced Options: Create α route to the applicationの`チェックを外す`
+
+
     ![](images/developer_catalog_choose_python_2.png)
+    ![](images/developer_catalog_choose_python_3.png)
     
 1. 最後に **Create** を選択します
+    ![](images/developer_catalog_choose_python_4.png)
 
     >Tips:
     >
     >指定した名前のアプリケーション(コンテナ)が動作するPodがデプロイされました。
-    >OCPコンソールで，Workloads > Pods > アプリ名-x-xxxx のように辿ることで確認できます。
+    >OCPコンソールのAdministoratorコンソールでは、Workloads > Pods > アプリ名-x-xxxx のように辿ることで確認できます。
 
 
-    下図のように，デプロイ直後は **"0 of 1 pods"** のように動作準備中の状態です。
+    下図のように，トポロジーが表示されるので、デプロイしたアプリケーションを選択すると、デプロイ直後は 以下のように動作準備中の状態で表示されます。
     
-    ![](images/developer_catalog_deploy_pod_result_1.png)
+    ![](images/developer_catalog_deploy_pod_result_1−1.png)
+    ![](images/developer_catalog_deploy_pod_result_1−2.png)
 
-    少し待つと，下図のように **"1 of 1 pods"** のように正常に動作した状態を確認できます。
-    (Home > Status > App名をクリック > Resources > View Logs でデプロイ中のログが見れます)
+    少し待つと，下図のように 正常に動作した状態（Running,1Pod）を確認できます。
+    (Resources > View Logs でデプロイ中のログが見れます)
     
-    ![](images/developer_catalog_deploy_pod_result_2.png)
+    ![](images/developer_catalog_deploy_pod_result_2−1.png)
+    ![](images/developer_catalog_deploy_pod_result_2−2.png)
     
     
 ## 外部からアクセスするための Route を作成
+1. Administratorコンソールへ切り替えます。
+    ![](images/switch_admin_console.png)
+
+
 1. Networking > Routes > Create Route を選択します
 
 
@@ -233,6 +248,8 @@ OpenShiftでは，いくつかの方法でアプリケーションをクラス�
     - Name: **`任意の名称 (例: mypyapp)`**
     - Service: `mypyapp`
     - Target Port: `8080 → 8080(TCP)`
+    ![](images/cretate_route.png)
+
 1. 最後に **Create** を選択します
 
     >Tips:

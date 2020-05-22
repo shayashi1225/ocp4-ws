@@ -12,23 +12,29 @@
     Home > Project > dev01 (例)
     
     ![](images/create_application_using_existedImage_1.png)
+2. Developerコンソールへ切り替えます。
 
-2. **Add > Deploy Image** を選択します
+    ![](images/switch_dev_console.png)
+
+
+3. **+Add** > **Container Image** を選択します
 
     ![](images/create_application_using_existedImage_2.png)
 
-3. **Namespace**(プロジェクト名)，と**Image Name** を指定します
-    - Namespace: `各自の作成済プロジェクト(例: dev01)`
-    - Image Name: `quay.io/openshiftlabs/workshop-terminal:2.4.0`
+4. **Image Name** を指定します
+    - Image name from external registry: `quay.io/openshiftlabs/workshop-terminal:2.4.0`
 
     ![](images/create_application_using_existedImage_3.png)
 
-4. **検索ボタン**(虫眼鏡アイコン)をクリックし，Name(workshop-terminal)を確認して，**Deploy** を選択します
+5. Name(workshop-terminal)、Resources（Deployment Config)を確認して，**Create** を選択します
 
-    ![](images/create_application_using_existedImage_4.png)
+    Podが起動するまで待ちます。
 
-5. 外部からアクセスするための **Route** を作成します
+    ![](images/create_application_using_existedImage_5.png)
 
+6. 外部からアクセスするための **Route** を作成します
+
+    Administoratorコンソールへ切り替えた後、  
     Networking > Routes > Create Route を選択し，以下を指定した後 **Create** を選択します
     - Name: `Route名(例: workshop-terminal)`
     - Service: `対象アプリ用のService(例: workshop-terminal)`
@@ -36,12 +42,12 @@
 
     ![](images/create_route_for_existedImage.png)
 
-6. Location欄にあるリンクを開きます
+7. Location欄にあるリンクを開きます
     例: `http://workshop-terminal-dev01.apps.cluster-tokyo-ef76.tokyo-ef76.openshiftworkshop.com/`
 
     ![](images/create_route_for_existedImage_result.png)
 
-7. Terminalアプリが表示されることを確認します
+8. Terminalアプリが表示されることを確認します
 
     ![](images/create_route_for_existedImage_result_2.png)
 
@@ -74,8 +80,32 @@ GUIで操作することも可能ですが、今回はCLI操作をメインに�
 1. 自身用の新規プロジェクト **devXX-jenkins** を作成します  **(例: dev01-jenkins)**
 
     ```
-    $ oc login https://api.cluster-tokyo-ef76.tokyo-ef76.openshiftworkshop.com:6443
+    $ oc login https://<クラスタURL>:6443
+    The server uses a certificate signed by an unknown authority.
+    You can bypass the certificate check, but any data you send to the server could be intercepted by others.
+    Use insecure connections? (y/n): y
+    
+    Authentication required for https://api.cluster-nagoya-4fcb.nagoya-4fcb.example.opentlc.com:6443 (openshift)
+    Username: user1
+    Password: 
+    Login successful.
+    
+    You have access to 59 projects, the list has been suppressed. You can list all projects with 'oc projects'
+    
+    Using project "default".
+    Welcome! See 'oc help' to get started.
+    
     $ oc new-project dev01-jenkins (<== ご自身のプロジェクト名)
+    Now using project "user1-jenkins" on server "https://api.cluster-nagoya-4fcb.nagoya-4fcb.example.opentlc.com:6443".
+    
+    You can add applications to this project with the 'new-app' command. For example, try:
+
+    oc new-app ruby~https://github.com/sclorg/ruby-ex.git
+    
+    to build a new example application in Python. Or use kubectl to deploy a simple Kubernetes application:
+
+    kubectl create deployment hello-node --image=gcr.io/ hello-minikube-zero-install/hello-node
+    
     $ oc project
     Using project "dev01-jenkins" on server XXXXXXX
     
@@ -91,7 +121,26 @@ GUIで操作することも可能ですが、今回はCLI操作をメインに�
     jenkins-persistent: 永続化あり
 
     $ oc new-app jenkins-ephemeral
+    :
+    --> Creating resources ...
+    route.route.openshift.io "jenkins" created
+    deploymentconfig.apps.openshift.io "jenkins" created
+    serviceaccount "jenkins" created
+    rolebinding.authorization.openshift.io "jenkins_edit" created
+    service "jenkins-jnlp" created
+    service "jenkins" created
+    
+    --> Success
+    Access your application via route 'jenkins-user1-jenkins.apps.cluster-nagoya-4fcb.nagoya-4fcb.example.opentlc.com' 
+    Run 'oc status' to view your app.
+    
     $ oc get pods -w
+    NAME               READY   STATUS              RESTARTS   AGE
+    jenkins-1-4mzx6    0/1     ContainerCreating   0          4s
+    jenkins-1-deploy   1/1     Running             0          6s
+    jenkins-1-4mzx6    0/1     ContainerCreating   0          11s
+    :
+    
     # ctrl-c でwatch状態から抜けられます
     ```
 
@@ -107,7 +156,8 @@ GUIで操作することも可能ですが、今回はCLI操作をメインに�
     $ oc create -f https://raw.githubusercontent.com/openshift/origin/master/examples/jenkins/pipeline/nodejs-sample-pipeline.yaml
     
     $ oc get buildconfigs
-    nodejs-sample-pipeline  # oc createで作成されたPipeline
+    NAME                     TYPE              FROM   LATEST
+    nodejs-sample-pipeline   JenkinsPipeline          0      # oc createで作成されたPipeline
     
     $ oc get buildconfig/nodejs-sample-pipeline -o yaml　# 中身を確認
     ```
@@ -130,8 +180,13 @@ GUIで操作することも可能ですが、今回はCLI操作をメインに�
     ![](images/jenkins_login_1.png)
     
     users.htpasswdを選択し，その後ログイン情報を入力します(例: dev01/openshift)
-    
+
     ![](images/jenkins_login_2.png)
+    
+    以下のような画面が出た場合は、[Allow selected permissions]を選択します。
+
+    ![](images/jenkins_login_2−1.png)
+
     
     **自身のプロジェクト名** を選択します(例: dev01-jenkins)
     

@@ -14,75 +14,70 @@ Node.jsアプリケーションを作成し、MongoDBと接続する上で必要
 
     ![](images/create_application_using_existedImage_1.png)
 
-1. Catalog > Developer Catalog > と選択し、「mongodb (ephemeral)」と検索し、MongoDB(Ephemeral)を選択してください。
+1. Developerコンソールへ切り替えます。
+
+    ![](images/switch_dev_console.png)
+
+1. +Add > From Catalog と選択し、「mongodb (ephemeral)」と検索し、MongoDB(Ephemeral)を選択してください。
 
     ![](images/mongo1.png)
 
-1. Create Service Instanceをクリックしたら下記のような画面になります。そのままCreateをクリックしてください。
+1. [Instantiate Template] をクリックしたら下記のような画面になります。そのままCreateをクリックしてください。
   
     ![](images/mongo2.png)
 
-1. 「Create Service Binding」を選択します。
 
-    ![](images/mongo3.png)
-
-1. 「Service Binding Name」が下記のように「mongodb-ephemeral」のようになっているはずなので、そのままCreateを選択してください。
-
-    ![](images/mongo4.png)
-
-1. 下記画面に遷移しますので、「SECRET」の「mongodb-ephemeral」のリンクを選択してください。(作成されるまで多少時間が掛かります)
-
-    ![](images/mongo5.png)
-
-1. 下にスクロールし、右側の「Reveal Values」を選択し、表示されたユーザー名やパスワード全てをメモしておいてください。後でアプリケーションの設定をする時に必要となります。
-
-    ![](images/mongo6.png)
 
 # Node.jsアプリケーションを構築
 
-1. 次にNode.jsのアプリケーションを構築します。Catalog > Developer Catalog > Languages > JavaScript と進み、
+1. 次にNode.jsのアプリケーションを構築します。Developerコンソールへ切り替えます。
+
+    ![](images/switch_dev_console.png)
+
+1. From Catalog > Languages > JavaScript と進み、
 
    Node.jsを選択してください。(Node.js + MongoDBや、Node.js + MongoDB(Ephemeral)ではありません)
 
    ![](images/node1.png)
 
-2. Create Applicationを選択したら、下記のように Nameは「ユーザー名-multi-pod-app」、Git Repositoryには
+2. Create Applicationを選択したら、下記のように  
+ Git Repository:  https://github.com/openshift/nodejs-ex.git  
+ Application Name/ Name: <ユーザー名>-multi-pod-app  
+を入れ、Createを選択してください。
 
-   「https://github.com/openshift/nodejs-ex.git」を入れ、Createを選択してください。
+   ![](images/node2-1.png)
+   ![](images/node2-2.png)
+   ![](images/node2-3.png)
 
-   ![](images/node2.png)
-
-3. 次にアプリケーションへのRouteを作成します。Networking > Routes > Create Route と進み、
-
-   Nameに「ユーザー名-multi-pod-app」、Service も同様に「ユーザー名-multi-pod-app」を選択、
-
-   Target Port は「8080 -> 8080 (TCP)」を選択してCreateしてください。
+3. 作成したアプリケーションアイコンを選択して、[Resources]内の[Routes]を確認します。ビルド、デプロイが終わったら、Locationのリンクを選択するとアプリケーションのデフォルトページに遷移します。右下の「Page view count」が「No database configured」になっていることを確認してください。
 
    ![](images/node3.png)
 
-4. Networking > Routes と進むと、今作成したRouteが表示されます。Locationのリンクを選択するとアプリケーションのデフォルトページに遷移します。右下の「Page view count」が「No database configured」になっていることを確認してください。
-
-   ![](images/node4.png)
 
 # Node.jsとMongoDBを繋げる
 
 1. 最後に作成したNode.jsアプリケーションからMongoDBに接続する設定を行います。
 
-   Deployment Configs > ユーザー名-multi-pod-app > Environment と進んでください。
+   作成したアプリケーションアイコンを選択して、DC:<ユーザ名>-multi-pod-appを選択してください。
 
-   ここで Single values (env) の下にNAME, VALUEと入力できる箇所があるので、以前MongoDB構築時にメモした値を入れていきます。それぞれ下記のように入れていきます。
+   ![](images/node_mongo1-1.png)
 
-   | NAME                   | VALUE                            |
-   | ---------------------- | -------------------------------- |
-   | MONGODB_USER           | USERNAMEに表示されていた値       |
-   | MONGODB_DATABASE       | DATABASE_NAMEに表示されていた値  |
-   | MONGODB_PASSWORD       | PASSWORDに表示されていた値       |
-   | MONGODB_ADMIN_PASSWORD | ADMIN_PASSWORDに表示されていた値 |
-   | DATABASE_SERVICE_NAME  | mongodb (固定値)                 |
+   [Environment]ページの Single values (env) の下にNAME, VALUEと入力できる箇所があるので、それぞれ下記のように入れていきます。
 
-   ![](images/node_mongo1.png)
+   | | NAME                   | VALUE                            |
+   |-- | ---------------------- | -------------------------------- |
+   |Add from Config Map or Secret | MONGODB_USER           | [S]mongodb > database-user|
+   |Add from Config Map or Secret | MONGODB_DATABASE       | [S]mongodb > database-name|  |
+   |Add from Config Map or Secret | MONGODB_PASSWORD       | [S]mongodb > database-password| |
+   |Add from Config Map or Secret | MONGODB_ADMIN_PASSWORD | [S]mongodb > database-admin-password| |
+   |Add Value | DATABASE_SERVICE_NAME  | mongodb (固定値)                 |
 
-2. 設定が終わったら、先ほどのアプリケーションのページに遷移してください。下記のようにPage view countが加算されるようになれば設定成功です。設定が反映されるまで時間がかかるので、うまくいかない場合はしばらくたってからリロードして確認してください。
+   ![](images/node_mongo1-2.png)
+
+2. 設定が終わったら[Save]を選択後、先ほどのアプリケーションのページに遷移してください。下記のようにPage view countが加算されるようになれば設定成功です。設定が反映されるまで時間がかかるので、うまくいかない場合はしばらくたってからリロードして確認してください。
 
    ![](images/node_mongo2.png)
 
+    >Tips:
+    >
+    >Secretとして保存されている実際の値は、Administoratorコンソール - Workloads - Secrets - mongodb - Data で[Reveal Values]から確認できます。
