@@ -54,6 +54,10 @@ Node.jsアプリケーションを作成し、MongoDBと接続する上で必要
    ![](images/node3.png)
 
 
+> Tips:  
+> アプリケーションアイコン右上の[Open URL]アイコンをクリックしてもLocationへアクセスできます。
+
+
 # Node.jsとMongoDBを繋げる
 
 1. 最後に作成したNode.jsアプリケーションからMongoDBに接続する設定を行います。
