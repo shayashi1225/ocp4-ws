@@ -233,7 +233,7 @@ Rolling Updateは新しいバージョンのアプリケーションのPodを少
    deploymentconfig.apps.openshift.io/rolling updated
    ```
 
-4. Workloads > Deployment Configs > rolling > Podsを確認します。
+4. Developerコンソールで、 Topology > [アプリケーションアイコン] > Resoources > Podsを確認します。
 
    ![](images/rolling1.png)
 
@@ -271,8 +271,8 @@ Rolling Updateは新しいバージョンのアプリケーションのPodを少
    ...
    ```
 
-8. Workloads > Deployment Configs > rolling > Podsを再度確認し、Pod名が変わっていることを確認します。
+8.  Topology > [アプリケーションアイコン] > Resoources > Podsを再度確認し、Pod名が変わっていることを確認します。
 
    ![](images/rolling2.png)
+   ![](images/rolling3.png)
 
-   

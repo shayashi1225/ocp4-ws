@@ -10,16 +10,44 @@ Lab5で作成したQuarkusプロジェクトをTektonベースのビルドパイ
 1. 下記でTekton Pipelineをインストールします。
 
    ```
-   oc new-project tekton-pipelines
-   oc adm policy add-scc-to-user anyuid -z tekton-pipelines-controller
-   oc apply --filename https://storage.googleapis.com/tekton-releases/latest/release.yaml
-   oc get pods --namespace tekton-pipelines --watch
+   $ oc new-project tekton-pipelines
+   Now using project "tekton-pipelines" on server "https://api.cluster-nagoya-9608.nagoya-9608.example.opentlc.com:6443".
+   
+   You can add applications to this project with the 'new-app' command. For example, try:
+
+    oc new-app centos/ruby-25-centos7~https://github.com/sclorg/ruby-ex.git
+    to build a new example application in Ruby.
+
+   $ oc adm policy add-scc-to-user anyuid -z tekton-pipelines-controller
+   scc "anyuid" added to: ["system:serviceaccount:tekton-pipelines:tekton-pipelines-controller"]
+
+   $ oc apply --filename https://storage.googleapis.com/tekton-releases/latest/release.yaml
+   :
+   configmap/config-logging created
+   configmap/config-observability created
+   deployment.apps/tekton-pipelines-controller created
+   deployment.apps/tekton-pipelines-webhook created
+   
+   $ oc get pods --namespace tekton-pipelines --watch
+   NAME                                           READY     STATUS              RESTARTS   AGE
+   tekton-pipelines-controller-5b75cdfb95-9qcds   0/1       ContainerCreating   0          7s
+   tekton-pipelines-webhook-b848dcd97-2m7rh       0/1       ContainerCreating   0          7s
+   tekton-pipelines-webhook-b848dcd97-2m7rh   0/1       ContainerCreating   0         8s
+   tekton-pipelines-controller-5b75cdfb95-9qcds   0/1       ContainerCreating   0         8s
+   tekton-pipelines-webhook-b848dcd97-2m7rh   1/1       Running   0         9s
+   tekton-pipelines-controller-5b75cdfb95-9qcds   1/1       Running   0         11s
    ```
 
 2. 続けて下記でTekton dashboardをインストールします。
 
    ```
-   oc apply -n tekton-pipelines --filename https://github.com/tektoncd/dashboard/releases/download/v0.1.0/openshift-tekton-dashboard.yaml
+   $ oc apply -n tekton-pipelines --filename https://github.com/tektoncd/dashboard/releases/download/v0.1.0/openshift-tekton-dashboard.yaml
+   :
+   deployment.apps/tekton-dashboard created
+   route.route.openshift.io/tekton-dashboard created
+   service/tekton-dashboard created
+   pipeline.tekton.dev/pipeline0 created
+   task.tekton.dev/pipeline0-task created
    ```
 
 3. Routeを確認し、ログイン画面が表示されたらOpenshift と同じユーザー情報を入力してログインできればインストール完了です。
@@ -37,43 +65,62 @@ Lab5で作成したQuarkusプロジェクトをTektonベースのビルドパイ
 2. pipelineで必要な設定をするために、下記でセットアップを行います。ユーザー名の箇所には御自身のユーザー名を入力してください。 ex. dev01
 
    ```
-   sed -i -e 's/pipeline-test/ユーザー名-pipeline/g' setup.sh
-   sed -i -e 's/pipeline-test/ユーザー名-pipeline/g' application.yaml
-   sed -i -e 's/pipeline-test/ユーザー名-pipeline/g' pipeline-resources.yaml
-   ./setup.sh
+   $ sed -i -e 's/pipeline-test/<ユーザー名>-pipeline/g' application.yaml
+   $ sed -i -e 's/pipeline-test/<ユーザー名>-pipeline/g' pipeline-resources.yaml
    ```
+
+   ```
+   $ oc new-project <ユーザ名>-pipeline --as=<ユーザ名> --as-group=system:authenticated --as-group=system:authenticated:oauth
+   Now using project "user1-pipeline" on server "https://api.cluster-nagoya-9608.nagoya-9608.example.opentlc.com:6443".
+
+   You can add applications to this project with the 'new-app' command. For example, try:
+    oc new-app centos/ruby-25-centos7~https://github.com/sclorg/ruby-ex.git
+    
+   to build a new example application in Ruby.
+
+   $ oc project <ユーザ名>-pipeline
+   Already on project "user1-pipeline" on server "https://api.cluster-nagoya-9608.nagoya-9608.example.opentlc.com:6443".
+  
+   $ oc create serviceaccount pipeline
+   serviceaccount/pipeline created
+  
+   $ oc adm policy add-scc-to-user privileged -z pipeline
+   scc "privileged" added to: ["system:serviceaccount:user1-pipeline:pipeline"]
+  
+   $ oc adm policy add-role-to-user edit -z pipeline
+   role "edit" added: "pipeline"
+   ```
+
 
 3. 続けて下記でpipelineをスタートします。
 
    ```
    ./start-pipeline.sh
+   imagestream.image.openshift.io/quarkus-app created
+   deploymentconfig.apps.openshift.io/quarkus-app created
+   service/quarkus-app created
+   route.route.openshift.io/quarkus-app created
+   task.tekton.dev/oc created
+   task.tekton.dev/build-and-push created
+   pipelineresource.tekton.dev/pipeline-source created
+   pipelineresource.tekton.dev/pipeline-image created
+   pipeline.tekton.dev/sample-pipeline created
+   pipelinerun.tekton.dev/sample-pipeline-run created
    ```
 
-4. dashboardでpipelineの状況を確認する為にTektonのURLをブラウザバーに入力します。表示したら「Log in with OpenShift」を選択します。
-
-   ![](images/tekton_1.png)
-
-5. 下のhtpasswdを選択します。
-
-   ![](images/tekton_2.png)
-
-6. ご自身のユーザー名、パスワードを入力して進みます。
-
-   ![](images/tekton_3.png)
-
-7. 途中で SSO許可の画面が表示されますので、「Allow Permission」としてください。tektonの画面にログインできたら、左下のNamespacesで御自身のプロジェクトを選択してください。
+4. dashboardでpipelineの状況を確認します。tektonの画面にログインできたら、左下のNamespacesで御自身のプロジェクトを選択してください。
 
    ![](images/tekton_4.png)
 
-8. PipelineRunsを選択すると作成したPipelineの状態が確認できます。sample-pipeline-runを選択してください。
+5. PipelineRunsを選択すると作成したPipelineの状態が確認できます。sample-pipeline-runを選択してください。
 
    ![](images/tekton_5.png)
 
-9. pipelineの詳細が確認できます。build, deploy共にグリーンになっていたら成功です。Routeを確認してデプロイしたアプリケーションにアクセスしてください。
+6. pipelineの詳細が確認できます。build, deploy共にグリーンになっていたら成功です。Routeを確認してデプロイしたアプリケーションにアクセスしてください。
 
    ![](images/tekton_6.png)
 
-10. アプリケーションの画面が表示できれば成功です。
+7. アプリケーションの画面が表示できれば成功です。
 
    ![](images/tekton_7.png)
 

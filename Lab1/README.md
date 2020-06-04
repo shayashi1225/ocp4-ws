@@ -214,7 +214,8 @@ OpenShiftでは，いくつかの方法でアプリケーションをクラス�
     ![](images/developer_catalog_choose_python_2.png)
     ![](images/developer_catalog_choose_python_3.png)
     
-1. 最後に **Create** を選択します
+1. 最後に **Create** を選択します。(ここでは[Advanced Options]-[Create a route the application]はチェックを外します。)
+
     ![](images/developer_catalog_choose_python_4.png)
 
     >Tips:
@@ -236,11 +237,11 @@ OpenShiftでは，いくつかの方法でアプリケーションをクラス�
     
     
 ## 外部からアクセスするための Route を作成
-1. Administratorコンソールへ切り替えます。
-    ![](images/switch_admin_console.png)
+1. More > Searchを選択します。Resourcesから[Route]を選択します。
+    ![](images/search_route.png)
 
 
-1. Networking > Routes > Create Route を選択します
+1. Create Route を選択します
 
 
 
@@ -254,7 +255,8 @@ OpenShiftでは，いくつかの方法でアプリケーションをクラス�
 
     >Tips:
     >
-    >Networking > Routes > ルート名 のように辿ることで確認できます。
+    > 同様にSearchでRouteリソースを表示することで作成したrouteが確認できます。
+    > Administrotorコンソールでは、Networking > Routes > ルート名 のように辿ることで確認できます。
 
 ## アプリケーションの動作確認
 1. Networking > Routes > ルート名 を選択し，Location欄にあるリンクを開きます

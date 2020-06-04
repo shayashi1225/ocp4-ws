@@ -34,15 +34,14 @@
 
 6. 外部からアクセスするための **Route** を作成します
 
-    Administoratorコンソールへ切り替えた後、  
-    Networking > Routes > Create Route を選択し，以下を指定した後 **Create** を選択します
+    More > Searchからrouteリソースを選択後、 Create Route を選択し，以下を指定した後 **Create** を選択します
     - Name: `Route名(例: workshop-terminal)`
     - Service: `対象アプリ用のService(例: workshop-terminal)`
     - Target Port: `10080 → 10080(TCP)`
 
     ![](images/create_route_for_existedImage.png)
 
-7. Location欄にあるリンクを開きます
+7. Location欄にあるリンクを開きます  
     例: `http://workshop-terminal-dev01.apps.cluster-tokyo-ef76.tokyo-ef76.openshiftworkshop.com/`
 
     ![](images/create_route_for_existedImage_result.png)
